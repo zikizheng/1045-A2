@@ -45,7 +45,13 @@ class City():
         self.population = population
 
         self.city_id = city_id
+        
+        self.id_to_cities[city_id] = self
 
+        try:
+            self.name_to_cities[name].append(self)
+        except:
+            self.name_to_cities[name] = [self]
         #TODO
 
     def distance(self, other_city: City) -> int:
@@ -57,6 +63,7 @@ class City():
         :return: the rounded-up distance in kilometers
         """
         #TODO
+        return math.ceil(geopy.distance.great_circle(self.coordinates, other_city.coordinates).km)
 
     def __str__(self) -> str:
         """
@@ -66,6 +73,7 @@ class City():
         :return: a string representing the city.
         """
         #TODO
+        return (f"{self.name} ({self.city_id})")
 
     def get_table_data(self) -> list[str]:
         """
@@ -78,6 +86,13 @@ class City():
         :return: A list of data about the city.
         """
         #TODO
+        retlist = []
+        retlist.append(self.name)
+        retlist.append(str(self.coordinates))
+        retlist.append(self.city_type)
+        retlist.append(str(self.population))
+        retlist.append(str(self.city_id))
+        return retlist
 
 
 def get_city_by_id(city_id: int) -> City | None:
@@ -88,7 +103,9 @@ def get_city_by_id(city_id: int) -> City | None:
     :return: the city with that ID if one is known, None otherwise.
     """
     #TODO
-
+    for i in City.id_to_cities:
+        if i == city_id:
+            return City.id_to_cities[i]
 
 def get_cities_by_name(city_name: str) -> list[City]:
     """
@@ -99,8 +116,10 @@ def get_cities_by_name(city_name: str) -> list[City]:
     :return: the list of cities known by this name. 
     """
     #TODO
-
-
+    if city_name in City.name_to_cities:
+        return(City.name_to_cities[city_name])
+    else:
+        return []
 
 def create_example_cities() -> None:
     """
@@ -131,4 +150,5 @@ def test_example_cities() -> None:
 
 if __name__ == "__main__":
     create_example_cities()
+    print(get_cities_by_name("Santiago"))
     test_example_cities()
