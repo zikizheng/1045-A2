@@ -8,15 +8,26 @@ of the class City and the class Country.
 """
 import csv
 from city import City
-from country import Country
+from country import *
 
 def create_cities_countries_from_csv(path_to_csv: str) -> None:
-    """
-    Reads a CSV file given its path and creates instances of City and Country for each line.
+	"""
+	Reads a CSV file given its path and creates instances of City and Country for each line.
 
-    :param path_to_csv: The path to the CSV file.
-    """
-    #TODO
+	:param path_to_csv: The path to the CSV file.
+	"""
+	file = open(path_to_csv)
+	reader = csv.DictReader(file)
+	for line in reader:
+		add_city_to_country(
+			City(
+				line["city_ascii"],
+				(float(line["lat"]), float(line["lng"])),
+				line["capital"],
+				int(line["population"]) if line["population"] else 0,
+				line["id"]
+				),
+			line["country"], line["iso3"])
 
 if __name__ == "__main__":
     create_cities_countries_from_csv("worldcities_truncated.csv")

@@ -49,9 +49,9 @@ class City():
         self.id_to_cities[city_id] = self
 
         try:
-            self.name_to_cities[name].append(self)
+            City.name_to_cities[name].append(self)
         except:
-            self.name_to_cities[name] = [self]
+            City.name_to_cities[name] = [self]
         #TODO
 
     def distance(self, other_city: City) -> int:

@@ -27,7 +27,7 @@ class Country():
         self.iso3 = iso3
         self.cities = {}
 
-        self.name_to_countries[name] = self
+        Country.name_to_countries[name] = self
         #TODO
 
     def add_city(self, city: City) -> None:
