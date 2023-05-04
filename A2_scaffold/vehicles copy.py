@@ -40,16 +40,6 @@ class Vehicle(ABC):
                  or math.inf if the travel is not possible.
         """
         #TODO
-        if len(itinerary.cities) < 2:
-            return math.inf
-        l = 0
-        r = 1
-        duration = 0
-        while r < len(itinerary.cities):
-            duration += self.compute_travel_time(itinerary.cities[l], itinerary.cities[r])
-            l+=1
-            r+=1
-        return duration
 
     @abstractmethod
     def __str__(self) -> str:
@@ -129,14 +119,30 @@ class DiplomacyDonutDinghy(Vehicle):
         :return: the travel time in hours, rounded up to an integer,
                  or math.inf if the travel is not possible.
         """
-        if departure.city_type == arrival.city_type == "primary":
-            travel = Itinerary([departure, arrival])
-            return round(travel.total_distance()/self.between_primary_speed + 0.5)
-        elif find_country_of_city(departure) == find_country_of_city(arrival):
-            travel = Itinerary([departure, arrival])
-            return round(travel.total_distance()/self.in_country_speed + 0.5)
-        else:
-            return math.inf
+        inCountryDistance = 0
+        totalDuration = 0
+        primaryOfCity = {}
+        for city in (departure, arrival):
+            cityList = []
+            cityList.append(city)
+
+            if city.city_type != "primary":
+                primary = find_country_of_city(city).get_cities(['primary'])[0]
+                minDistance = float('inf')
+                cityList.append(primary)
+                primaryOfCity[city] = primary
+            else:
+                primaryOfCity[city] = city
+            inCountryDistance += Itinerary(cityList).total_distance()
+
+        inCountryDuration = round(inCountryDistance / self.in_country_speed + 0.5)
+
+        primaryDistance = Itinerary([primaryOfCity[departure], primaryOfCity[arrival]]).total_distance()
+        primaryDuration = round(primaryDistance / self.between_primary_speed + 0.5)
+
+        totalDuration = inCountryDuration + primaryDuration
+
+        return totalDuration
 
     def __str__(self) -> str:
         """
@@ -160,7 +166,7 @@ class TeleportingTarteTrolley(Vehicle):
         Creates a TeleportingTarteTrolley with a distance limit in km.
 
         :param travel_time: the time it takes to travel.
-        :param max_distance: the maximum distance it can travel.
+        :param max_distance: the maximum distance it can travel.u 
         """
         #TODO
         self.travel_time = travel_time
@@ -178,11 +184,6 @@ class TeleportingTarteTrolley(Vehicle):
                  or math.inf if the travel is not possible.
         """
         #TODO
-        travel = Itinerary([departure, arrival])
-        if travel.total_distance() > self.max_distance:
-            return math.inf
-        else:
-            return self.travel_time
 
     def __str__(self) -> str:
         """
