@@ -25,7 +25,7 @@ def create_cities_countries_from_csv(path_to_csv: str) -> None:
 				(float(line["lat"]), float(line["lng"])),
 				line["capital"],
 				int(line["population"]) if line["population"] else 0,
-				line["id"]
+				int(line["id"])
 				),
 			line["country"], line["iso3"])
 
