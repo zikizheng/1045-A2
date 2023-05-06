@@ -75,16 +75,9 @@ def plot_itinerary(itinerary: Itinerary, projection = 'robin', line_width=2, col
         city = itinerary.cities[i]
         prev = itinerary.cities[i-1]
 
-        # plot with latlon=True takes latitude in argument one and
-        # longitude in argument two. to draw a line between two points,
-        # give a list containing the two latitudes followed by the two
-        # longitudes.
-
-        # the city stores its coordinate with latitudes in index 1 and
-        # longitudes in index 0
-
-        m.plot([city.coordinates[1], prev.coordinates[1]], [city.coordinates[0], prev.coordinates[0]],
-               latlon=True, color=colour, linewidth=line_width)
+		# draw a path following the curvature of the Earth
+        m.drawgreatcircle(city.coordinates[1], city.coordinates[0], prev.coordinates[1], prev.coordinates[0],
+				color=colour, linewidth=line_width);
 
     # save the figure to an appropriately named file
     plt.savefig("map_" + "_".join([city.name.lower() for city in itinerary.cities]) + ".png")
