@@ -17,17 +17,20 @@ def create_cities_countries_from_csv(path_to_csv: str) -> None:
 	:param path_to_csv: The path to the CSV file.
 	"""
 	file = open(path_to_csv)
+
+	# create a reader to read in the csv file into a dictionary
 	reader = csv.DictReader(file)
 	for line in reader:
+		# compose a city from the fields in the csv file and add it to the corresponding country
 		add_city_to_country(
 			City(
-				line["city_ascii"],
-				(float(line["lat"]), float(line["lng"])),
-				line["capital"],
-				int(line["population"]) if line["population"] else 0,
-				int(line["id"])
+				line["city_ascii"], # ascii representation of city's name
+				(float(line["lat"]), float(line["lng"])), # coordinates (latitude, longitude) as float
+				line["capital"], # whether or not city is a capital
+				int(line["population"]) if line["population"] else 0, # population of city as integer
+				int(line["id"]) # city id as an integer
 				),
-			line["country"], line["iso3"])
+			line["country"], line["iso3"]) # name and code of country
 
 if __name__ == "__main__":
     create_cities_countries_from_csv("worldcities_truncated.csv")
