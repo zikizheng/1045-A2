@@ -16,7 +16,7 @@ def create_cities_countries_from_csv(path_to_csv: str) -> None:
 
 	:param path_to_csv: The path to the CSV file.
 	"""
-	file = open(path_to_csv)
+	file = open(path_to_csv, encoding="utf8")
 
 	# create a reader to read in the csv file into a dictionary
 	reader = csv.DictReader(file)
