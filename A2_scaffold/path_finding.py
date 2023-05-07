@@ -14,6 +14,7 @@ from itinerary import Itinerary
 from vehicles import Vehicle, create_example_vehicles
 from csv_parsing import create_cities_countries_from_csv
 
+#Dictionary to store previously generated graphs for each vehicle
 graphs = {}
     
 def find_shortest_path(vehicle: Vehicle, from_city: City, to_city: City) -> Itinerary | None:
@@ -26,26 +27,37 @@ def find_shortest_path(vehicle: Vehicle, from_city: City, to_city: City) -> Itin
     :param to_city: The arrival city.
     :return: A shortest path from departure to arrival, or None if there is none.
     """
-    #TODO
+    #Check if a graph for this vehicle has been generated before
     if vehicle not in graphs:
+        #if not generated before, generate a new graph
         graph = networkx.Graph()
+        #create a node representing each city in city List
         cityList = City.id_to_cities.values()
         for city in cityList:
             graph.add_node(city, type=city.city_type)
+        #for each pair of cities in cityList, create an edge with the total time it takes to travel between cities based on vehicle type
         for a, cityA in enumerate(cityList):
             for b, cityB in enumerate(cityList, start = a+1):
+                #if using "CrappyCrepeCar", make edge for every city pair
                 if str(vehicle).split()[0] == "CrappyCrepeCar":
                     graph.add_edge(cityA, cityB, time = vehicle.compute_travel_time(cityA, cityB))
+                #if using "DiplomacyDonutDinghy", only make edges if the city_types are both "primary" or they're in the same country
                 elif (str(vehicle).split()[0] == "DiplomacyDonutDinghy" and 
                      (cityA.city_type == cityB.city_type == "primary" or
                      find_country_of_city(cityA) == find_country_of_city(cityB))):
                     graph.add_edge(cityA, cityB, time = vehicle.compute_travel_time(cityA, cityB))
+                #if using "TeleportingTarteTrolley", only make edges if the distance between cities are <= max_distance
                 elif (str(vehicle).split()[0] == "TeleportingTarteTrolley" and
                      (cityA.distance(cityB) <= vehicle.max_distance)):
                      graph.add_edge(cityA, cityB, time = vehicle.compute_travel_time(cityA, cityB))
+        #store generated graph in graphs dictionary with vehicle object as key
         graphs[vehicle] = graph
+
+    #if a path exists between from_city and to_city, return shortest path
     try:
         return Itinerary(networkx.shortest_path(graphs[vehicle], from_city, to_city, "time"))
+
+    #if it doesnt exist, return None
     except:
         return None
 
