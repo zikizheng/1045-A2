@@ -36,23 +36,19 @@ class City():
         :city_id: an integer unique to this city.
         :return: None
         """
+        #Initialize class variables
         self.name = name
-
         self.coordinates = coordinates
-
         self.city_type = city_type
-
         self.population = population
-
-        self.city_id = city_id
-        
+        self.city_id = city_id 
         self.id_to_cities[city_id] = self
 
+        #add city to name_to_cities dictionary list
         try:
             City.name_to_cities[name].append(self)
         except:
             City.name_to_cities[name] = [self]
-        #TODO
 
     def distance(self, other_city: City) -> int:
         """
@@ -62,7 +58,7 @@ class City():
         :param other_city: a city to measure the distance to
         :return: the rounded-up distance in kilometers
         """
-        #TODO
+        #use geopy.distance.great_circle().km to find distance in km and round up with math.ceil
         return math.ceil(geopy.distance.great_circle(self.coordinates, other_city.coordinates).km)
 
     def __str__(self) -> str:
@@ -72,7 +68,7 @@ class City():
 
         :return: a string representing the city.
         """
-        #TODO
+        #return string representation of city with city and city ID
         return (f"{self.name} ({self.city_id})")
 
     def get_table_data(self) -> list[str]:
@@ -85,7 +81,7 @@ class City():
 
         :return: A list of data about the city.
         """
-        #TODO
+        #append city attributes to a list and return the list
         retlist = []
         retlist.append(self.name)
         retlist.append(str(self.coordinates))
@@ -102,10 +98,10 @@ def get_city_by_id(city_id: int) -> City | None:
     :param city_id: the ID of the city.
     :return: the city with that ID if one is known, None otherwise.
     """
-    #TODO
-    for i in City.id_to_cities:
-        if i == city_id:
-            return City.id_to_cities[i]
+    #loop over IDs in id_to_cities and return the city if there is a match with city_id
+    for cityID in City.id_to_cities:
+        if cityID == city_id:
+            return City.id_to_cities[cityID]
 
 def get_cities_by_name(city_name: str) -> list[City]:
     """
@@ -115,7 +111,8 @@ def get_cities_by_name(city_name: str) -> list[City]:
     :param city_name: the name of the city.
     :return: the list of cities known by this name. 
     """
-    #TODO 
+    #if city_name is in name_to_cities then return the list of cities 
+    #else: return empty list
     if city_name in City.name_to_cities:
         return(City.name_to_cities[city_name])
     else:

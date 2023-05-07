@@ -39,16 +39,14 @@ class Vehicle(ABC):
         :return: the travel time in hours (an integer),
                  or math.inf if the travel is not possible.
         """
-        #TODO
+        #check if enough cities to make a path
         if len(itinerary.cities) < 2:
             return math.inf
-        l = 0
-        r = 1
+        
+        #add the duration of each consecutive city to duration and return it
         duration = 0
-        while r < len(itinerary.cities):
-            duration += self.compute_travel_time(itinerary.cities[l], itinerary.cities[r])
-            l+=1
-            r+=1
+        for i in range(1, len(itinerary.cities)):
+            duration += self.compute_travel_time(itinerary.cities[i-1], itinerary.cities[i])
         return duration
 
     @abstractmethod
@@ -71,7 +69,7 @@ class CrappyCrepeCar(Vehicle):
 
         :param speed: the speed in km/h.
         """
-        #TODO
+        #Initialize class variables
         self.speed = speed
 
     def compute_travel_time(self, departure: City, arrival: City) -> float:
@@ -84,8 +82,11 @@ class CrappyCrepeCar(Vehicle):
         :return: the travel time in hours, rounded up to an integer,
                  or math.inf if the travel is not possible.
         """
+        #create Itinerary of departure and arrival
         travel = Itinerary([departure, arrival])
-        return round(travel.total_distance()/self.speed + 0.5)
+
+        #return rounded up travel time
+        return math.ceil(travel.total_distance()/self.speed)
 
     def __str__(self) -> str:
         """
@@ -94,7 +95,7 @@ class CrappyCrepeCar(Vehicle):
 
         :return: the string representation of the vehicle.
         """
-        #TODO
+        #return string representation of CrappyCrepeCar with speed
         return f"CrappyCrepeCar ({self.speed} km/h)"
 
 class DiplomacyDonutDinghy(Vehicle):
@@ -114,7 +115,7 @@ class DiplomacyDonutDinghy(Vehicle):
         :param in_country_speed: the speed within one country.
         :param between_primary_speed: the speed between two primary cities.
         """
-        #TODO
+        #Initialize class variables
         self.in_country_speed = in_country_speed
         self.between_primary_speed = between_primary_speed
 
@@ -129,12 +130,20 @@ class DiplomacyDonutDinghy(Vehicle):
         :return: the travel time in hours, rounded up to an integer,
                  or math.inf if the travel is not possible.
         """
+        #create Itinerary with departure and arrival
+        travel = Itinerary([departure, arrival])
+
+        #check if departure and arrival city type is primary
         if departure.city_type == arrival.city_type == "primary":
-            travel = Itinerary([departure, arrival])
-            return round(travel.total_distance()/self.between_primary_speed + 0.5)
+            #return travel time with between_primary_speed
+            return math.ceil(travel.total_distance()/self.between_primary_speed)
+        
+        #check if departure and arrival city is in same country
         elif find_country_of_city(departure) == find_country_of_city(arrival):
-            travel = Itinerary([departure, arrival])
-            return round(travel.total_distance()/self.in_country_speed + 0.5)
+            #return travel time with in_country_speed
+            return math.ceil(travel.total_distance()/self.in_country_speed)
+        
+        #else travel is not possible so return math.inf
         else:
             return math.inf
 
@@ -145,7 +154,7 @@ class DiplomacyDonutDinghy(Vehicle):
 
         :return: the string representation of the vehicle.
         """
-        #TODO
+        #return string representation of DiplomacyDonuDingy with in_country_speed and between_primary_speed
         return f"DiplomacyDonutDinghy ({self.in_country_speed} km/h | {self.between_primary_speed} km/h)"
 
 class TeleportingTarteTrolley(Vehicle):
@@ -162,7 +171,7 @@ class TeleportingTarteTrolley(Vehicle):
         :param travel_time: the time it takes to travel.
         :param max_distance: the maximum distance it can travel.
         """
-        #TODO
+        #initialize class variables
         self.travel_time = travel_time
         self.max_distance = max_distance
 
@@ -177,10 +186,14 @@ class TeleportingTarteTrolley(Vehicle):
         :return: the travel time in hours, rounded up to an integer,
                  or math.inf if the travel is not possible.
         """
-        #TODO
+        #create Itinerary with departure and arrival
         travel = Itinerary([departure, arrival])
+        
+        #if the distance between cities is greater than max_distance
         if travel.total_distance() > self.max_distance:
+            #travel not possible so return math.inf
             return math.inf
+        #else travel is possible so return travel_time
         else:
             return self.travel_time
 
@@ -191,7 +204,7 @@ class TeleportingTarteTrolley(Vehicle):
 
         :return: the string representation of the vehicle.
         """
-        #TODO
+        #return string representation of TeleportingTarteTrolly with travel_time and max_distance
         return f"TeleportingTarteTrolley ({self.travel_time} h | {self.max_distance} km)"
 
 def create_example_vehicles() -> list[Vehicle]:
